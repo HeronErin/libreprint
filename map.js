@@ -1,8 +1,6 @@
 function overideKeys (event){
     if (event.ctrlKey==true && (event.which == '61' || event.which == '107' || event.which == '173' || event.which == '109'  || event.which == '187'  || event.which == '189'  ) ) {
         var isUp = event.which == '107' || event.which == '61'|| event.which=="187";
-        console.log(isUp)
-        console.log(event.which)
         if (!hasModal){
             if(!isUp) {zoomWidth*=1.1;zoomHeight*=1.1}
             else {zoomWidth*=0.9;zoomHeight*=0.9}
@@ -117,16 +115,17 @@ function unitbox(props){
 }
 var hasModal = false;
 function modal(props){
-    hasModal=true;
-    document.querySelector("#modalBackdrop").classList.add("active")
-    document.querySelector("#modalTitle").textContent = props.title || "";
-    document.querySelector("#modalInputs").innerHTML = "";
+    hasModal=props.isNotModal ? false : true
+    
+    document.querySelector(props.activeElement || "#modalBackdrop").classList.add("active")
+    document.querySelector(props.titleElement || "#modalTitle").textContent = props.title || "";
+    document.querySelector(props.inputElement || "#modalInputs").innerHTML = "";
     var open = true;
     var inputs = props.inputs || [];
     var i = 0;
     var ids = {}
     for (let input of inputs){
-        var id = `_model_input_`+i;
+        var id = (props.idPrepend||`_model_input_`)+i;
         ids[input.key] = id;
         let tr = document.createElement("tr")
 
@@ -156,17 +155,21 @@ function modal(props){
                 if (input.min != undefined) inputE.setAttribute("min", input.min);
                 if (input.max != undefined) inputE.setAttribute("max", input.max);
             }
+            if (input.type == "checkbox"){
+                inputE.checked = input.value;
+                ids[input.key] = function(){return inputE.checked;}
+            }
         }else{
             ids[input.key] = unitbox({
                 addTo: tr,
                 value: 0
             })
         }
-        document.querySelector("#modalInputs").appendChild(tr)
+        document.querySelector(props.inputElement || "#modalInputs").appendChild(tr)
 
         i++;
     }
-    document.querySelector("#modalSave").onclick = function(){
+    document.querySelector(props.savebtn || "#modalSave").onclick = function(){
         if (!open) return;
         open=false;
         for (let k of Object.keys(ids)){
@@ -175,8 +178,11 @@ function modal(props){
             else v = document.querySelector("#"+v).value;
             ids[k] = v;
         }
-        document.querySelector("#modalBackdrop").classList.remove("active");
-        hasModal=false;
+        
+        document.querySelector(props.activeElement||"#modalBackdrop").classList.remove("active");
+        hasModal=false
+        
+        
         props.onSubmit(ids);
     }
 
@@ -192,10 +198,15 @@ document.querySelector("#settingsBtn").onclick = function(){
         inputs: [
             {key: "width", type: "number", min: 10, label: "Svg width", value: svgWidth},
             {key: "height", type: "number", min: 10, label: "Svg height", value: svgHeight},
+            {key: "svgRatio", type: "number", min: 0, label: "Pixels per foot", value: svgRatio},
+            {key: "showScreenBox", type:"checkbox", value: showScreenBox, label: "Show image box"}
         ],
         onSubmit: function(ret){
+            console.log(ret)
             map[0].width=svgWidth=ret.width;
             map[0].height=svgHeight=ret.height;
+            map[0].svgRatio=svgRatio=ret.svgRatio
+            map[0].showScreenBox=showScreenBox=ret.showScreenBox
             savebtn();
         }
     })
