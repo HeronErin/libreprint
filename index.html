@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Blueprint maker</title>
+		<style type="text/css">
+			ul{
+				border: solid;
+				width: 60vw;
+				transform: translateX(15vw);
+				list-style-type: none;
+				margin: 0px;
+			}
+			h1{
+				width: 100%;
+				text-align: center;
+			}
+			h3{
+				color: darkblue;
+				font-size: 1.6em;
+				font-family: "pixel";
+			}
+			.l-item:hover{
+				background: #0002;
+			}
+			a{text-decoration: none;}
+			@font-face {
+			    font-family: 'pixel';
+			    src: url('PixelScriptRegular-4B83W.ttf') format('truetype');
+			         
+			}  
+			input{
+				font-size: 0.8em;
+				text-align: center;
+				transform: scaleY(0);
+				transition: transform linear 0.4s;
+			}
+			input#active{
+				transform: scaleY(1);
+			}
+		</style>
+	</head>
+	<body style="display: none;">
+		<ul>
+			<li class="l-title">
+				<h1>
+					Blueprint Maker
+					<br>
+					<button style="background: lightyellow; border: solid; font-size: 0.75em;" onclick="newBtn();">New</button>
+
+					<button style="background: skyblue; border: solid; font-size: 0.75em;" onclick="importFile();">Import</button>
+					<br>
+					<input placeholder="Enter name" maxlength="15" onkeypress="newEnter(event);">
+					<hr>
+
+				</h1>
+
+			</li>
+			<li class="l-item" id="template">
+				<a href = "edit.html?name=NAME">
+				<h3>NAME</h3>
+			</li>
+
+
+
+		</ul>
+
+	<script type="text/javascript">
+		function capitalizeFirstLetter(string) {
+		  return string.charAt(0).toUpperCase() + string.slice(1);
+		}
+	</script>
+
+	<script type="text/javascript">
+		var maps = JSON.parse(localStorage.getItem("map_data") || "{}");
+
+		var itemTemplate = document.querySelector(".l-item#template").cloneNode(true);
+		document.querySelector(".l-item#template").remove();
+
+
+		let mapList = Object.keys(maps);
+		for(let mapName of mapList){
+			let item = itemTemplate.cloneNode(true);
+			item.innerHTML = item.innerHTML.replace(/NAME/g, capitalizeFirstLetter(mapName));
+			document.querySelector("ul").appendChild(item);
+		}
+
+
+
+		function newBtn(){
+			document.querySelector("input").id="active";
+		}
+		function newEnter(event){
+			if (event.key != "Enter") return;
+
+			var name = document.querySelector("input").value.toLowerCase();
+			if (name && !maps[name] && maps[name] !== "map_data"){
+				maps[name] = {};
+				localStorage.setItem("map_data", JSON.stringify(maps));
+				localStorage.setItem(name, "[]");
+				location.href="edit.html?name="+name;
+			}
+		}
+
+		
+		
+
+
+		document.body.style.display="";
+	</script>
+
+	<script type="text/javascript">
+		function importFile() {
+	      const fileInput = document.createElement('input');
+	      fileInput.type = 'file';
+	      fileInput.accept = '.map';
+	      fileInput.addEventListener('change', handleFile);
+	      fileInput.click();
+
+	      function handleFile() {
+	        const file = fileInput.files[0];
+
+	        if (file) {
+	          const reader = new FileReader();
+
+	          reader.onload = function (event) {
+	            const fileContent = event.target.result;
+	            let data = JSON.parse(fileContent); // Might fail, but who cares
+	            if (maps[data[0]]){
+	            	if (!confirm(`Map "${data[0]}" already exists! Do you wish to overide it? This is permenent and can not be taken back!`)) return;
+	            	if (!confirm(`Are you sure you wish to OVERIDE the current version of "${data[0]}"`)) return;
+	        	}else{
+
+	        		maps[data[0]] = {};
+	        		localStorage.setItem("map_data", JSON.stringify(maps));
+	        	}
+
+				localStorage.setItem(data[0], JSON.stringify(data[1]));
+				location.href="edit.html?name="+data[0];
+	          };
+
+	          reader.readAsText(file);
+	        }
+
+	        // Remove the dynamically created file input element
+	        // document.body.removeChild(fileInput);
+	      }
+	    }
+	</script>
+	</body>
+</html>

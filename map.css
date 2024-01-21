@@ -1,0 +1,170 @@
+/*nav bar shit*/
+	* {
+	  margin: 0px;
+	}
+	#nav {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  width: calc(100% - .9em);
+	  height: 5em;
+	  border: inset black;
+	  background: #00000005;
+	  position: relative;
+	  margin: 0.3em;
+	}
+	#farleft{
+		width: 15em;
+		overflow: auto;
+	}
+
+	#navcontent {
+	  display: flex;
+	  align-items: center;
+	}
+
+	#navname {
+	  font-family: "pixel";
+	  color: darkblue;
+	  margin: 0;
+	}
+
+	#tools {
+	  flex: 1;
+	  display: flex;
+	  height: calc(100% - 0.8em);
+	  margin: 0.4em;
+	  border: dotted blue;
+	}
+	#settingsC{
+		float: right;
+		margin-right: 0.3em;
+		width: 3em;
+	}
+	#settingsBtn{
+		width: 4em;
+		background: rgb(108,108,108);
+		background: linear-gradient(31deg, rgba(108,108,108,1) 35%, rgba(210,210,210,1) 100%);
+		transition: opacity linear .2s;
+	}
+	.bi-gear{
+		height: 3em;
+
+	}
+	#save {
+	  align-items: center;
+	}
+
+	#savebtn {
+	  background: rgb(9, 121, 98);
+	  background: linear-gradient(31deg, rgba(9, 121, 98, 1) 35%, rgba(0, 180, 255, 1) 100%);
+	}
+	button{
+		opacity: 100%;
+		transition: opacity linear .2s;
+	}
+
+	button:hover{
+	  opacity: 50%;
+	}
+
+	#navtime {
+	  margin: .2em;
+	}
+
+	.bi-save {
+	  height: 3em;
+	}
+	@font-face {
+	    font-family: 'pixel';
+	    src: url('PixelScriptRegular-4B83W.ttf') format('truetype');
+	}
+	.navtool{
+		height: 2.5em;
+		margin-left: 0.3em;
+		font-size: 1em;
+	}
+	#exportbtn{
+		background-color: #ff9900;
+		width: 4.2em;
+	}
+	#saveSvg{
+		background-color: #0099FF;
+		width: 4.0em;
+	}
+
+/*modal*/
+	#modalBackdrop{
+		position: absolute;
+		width: 100%;
+		height: calc(100% - 5.5em);
+		top: 5.5em;
+		background: #FFFC;
+		visibility: hidden;
+
+		opacity: 0%;
+		transition: visibility .3s,opacity .3s;
+	}
+	#modalBackdrop.active{
+		visibility: visible;
+		opacity: 100%;
+	}
+	#modalBody{
+		overflow: auto;
+		position: absolute;
+		top: 10%;
+		left: 20%;
+		width: 60%;
+		height: 60%;
+		background: #FFFF;
+		border: inset black;
+
+	}
+	#modalTitle{
+		text-align: center;
+	}
+	#modalBack, #modalSave{
+		position: absolute;
+		font-size: 2em;
+		top: calc(70% - 1.5em);
+		width: 4em;
+		text-decoration: none;
+
+	}
+	#modalBack{
+		left: calc(80% - 8.2em);
+	}
+	#modalSave{
+		background: #04AA6D;
+		left: calc(80% - 4.1em);
+	}
+	#modalInputs{
+		margin-left: auto;
+		margin-right: auto;
+		width: fit-content;
+	}
+
+	.modelLabel, .modelInput{
+		font-size: 1.3em;
+	}
+	.modelLabel{
+		text-align: left;
+		float: left;
+		margin-right: 1em;
+	}
+	.modelInput{
+		width: 100%;
+	}
+#board{
+	width: 100%;
+	height: 100%;
+}
+#boardCont{
+	
+	position: absolute;
+	border: solid black;
+	
+	width: 100%;
+	height: calc(100% - 6em);
+}
+body{overflow: hidden}
