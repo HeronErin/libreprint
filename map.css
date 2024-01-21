@@ -155,16 +155,73 @@
 	.modelInput{
 		width: 100%;
 	}
-#board{
-	width: 100%;
-	height: 100%;
+
+/*side bar*/
+	.bi-arrow-left-circle{
+		position: absolute;
+		width: 4em;
+		left: -2em; 
+		top: calc(50% - 17% /2);
+		transition: transform linear .5s;
+		transform: rotateZ(-180deg);
+
+	}
+	#sidebarCont.active > .bi-arrow-left-circle{
+		transform: rotateZ(0deg);
+	}
+	#sidebarCont{
+		position: absolute;
+		margin-top: -5px;
+		width: 20%;
+		right: 0px;
+		height: calc(100% - 5.5em);
+		transition: right linear .5s;
+	}
+	#sidebarCont.active{
+		right: -18%;
+	}
+	#sidebar{
+		position: absolute;
+		right: 0px;
+		width: 90%;
+		height: 100%;
+		background: #AAAA;
+		border-left: solid black;
+	}
+	#sidebarInfo{
+		border: none;
+		background: none;
+
+	}
+@media screen and (max-width: 500px) { 
+    #sidebarCont {
+        width: 100%;
+    }
+	#sidebarCont.active{
+		right: -90%;
+	}
+	.bi-arrow-left-circle{
+		left: -3%;
+	}
 }
-#boardCont{
-	
-	position: absolute;
-	border: solid black;
-	
-	width: 100%;
-	height: calc(100% - 6em);
-}
-body{overflow: hidden}
+
+/*tools*/
+	.active.navtool{
+		background-color: #666;
+		color: #FFF;
+	}
+
+/*board*/
+	#board{
+		width: 100%;
+		height: 100%;
+	}
+	#boardCont{
+		
+		position: absolute;
+		
+		
+		width: 100%;
+		height: calc(100% - 6em);
+	}
+	body{overflow: hidden}

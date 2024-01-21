@@ -16,9 +16,9 @@
 			<h2 id="navname">A test name</h2>
 		</div>
 		<div id="tools">
-			<button class="navtool">Select</button>
-			<button class="navtool">Line</button>
-			<button class="navtool">Rectange</button>
+			<button class="navtool" id="tool_select">Select</button>
+			<button class="navtool" id="tool_line">Line</button>
+			<button class="navtool" id="tool_rect">Rectange</button>
 			
 		</div>
 		<div id="settingsC">
@@ -45,14 +45,23 @@
 
 
 	<div id="boardCont">
-		<svg xmlns="http://www.w3.org/2000/svg" id="board" fill="currentColor" onclick="clickSvg(event)">
+		<svg xmlns="http://www.w3.org/2000/svg" id="board" fill="currentColor">
 			<line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
 			<rect id="screenBox" width="1" height="1" style="fill: none; stroke-width:1;stroke:rgb(0,0,0)" />
 		</svg>
 	</div>
 
-	<div id="sidebar">
-		
+	<div id="sidebarCont" class="active">
+		<div id="sidebar">
+			<h2 id="sideBarTitle">Example modal title:</h2>
+			<table id="sidebarInfo">
+				
+			</table>
+		</div>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16" onclick="toggleSidebar()">
+			<circle cx="8" cy="8" r="8" style="fill: white" />
+			  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+		</svg>
 	</div>
 
 	<div id="modalBackdrop">
@@ -107,6 +116,7 @@
 		}
 	</script>
 	<script type="text/javascript" src="map.js"></script>
+	<script type="text/javascript" src="tools.js"></script>
 	<script type="text/javascript">
 		var map, mapName;
 		var saved, savedText;
@@ -121,6 +131,7 @@
 
 		var showScreenBox = true;
 
+		var activeToolbarItem = 0;
 
 		var svgRatio = 10; // Pixels per 'foot''
 		function do404(){
@@ -159,8 +170,8 @@
 					zoomY=zoomX
 					updateSvgSize();
 				}
-
 			}
+			updateActiveTool();
 
 
 		})();	
@@ -174,8 +185,15 @@
 		}
 		function updateSvgZoom(){
 			let svg = document.querySelector("#board");
+			toolZoomHandle[activeToolbarItem]();
 			
-			svg.setAttribute("viewBox", zoomX+" "+zoomY+" "+zoomWidth+" "+zoomHeight);
+			svg.setAttribute("x", zoomX);
+			svg.setAttribute("y", zoomY);
+			svg.setAttribute("width", zoomWidth);
+			svg.setAttribute("height", zoomHeight);
+			svg.setAttribute("viewBox", zoomX+' '+zoomY+" "+zoomWidth+" "+zoomHeight)
+
+			
 		}
 		function savebtn(){
 			saved=Date.now();

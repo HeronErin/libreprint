@@ -24,6 +24,7 @@ function overideKeys (event){
 
 
 
+
 function unitbox(props){
     let cont = document.createElement("div");
     let sel = document.createElement("select");
@@ -117,7 +118,9 @@ var hasModal = false;
 function modal(props){
     hasModal=props.isNotModal ? false : true
     
-    document.querySelector(props.activeElement || "#modalBackdrop").classList.add("active")
+    
+    if (props.activeElement !== null)
+        document.querySelector(props.activeElement || "#modalBackdrop").classList.add("active")
     document.querySelector(props.titleElement || "#modalTitle").textContent = props.title || "";
     document.querySelector(props.inputElement || "#modalInputs").innerHTML = "";
     var open = true;
@@ -146,10 +149,13 @@ function modal(props){
             inputE.setAttribute("class", "modelInput");
             
             inputE.value = input.value || "";
+            inputE.onchange=props.onchange;
 
             let th2 = document.createElement("th");
             th2.appendChild(inputE)
             tr.appendChild(th2);
+
+
 
             if (input.type == "number"){
                 if (input.min != undefined) inputE.setAttribute("min", input.min);
@@ -166,28 +172,30 @@ function modal(props){
             })
         }
         document.querySelector(props.inputElement || "#modalInputs").appendChild(tr)
-
+        if (props.doBrs != undefined)
+            for (let x=props.doBrs;x--;)
+                document.querySelector(props.inputElement || "#modalInputs").appendChild(document.createElement("br"));
         i++;
     }
-    document.querySelector(props.savebtn || "#modalSave").onclick = function(){
-        if (!open) return;
-        open=false;
-        for (let k of Object.keys(ids)){
-            let v = ids[k];
-            if (typeof(v) == "function") v = v();
-            else v = document.querySelector("#"+v).value;
-            ids[k] = v;
+    if (props.savebtn != null)
+        document.querySelector(props.savebtn || "#modalSave").onclick = function(){
+            if (!open) return;
+            open=false;
+            for (let k of Object.keys(ids)){
+                let v = ids[k];
+                if (typeof(v) == "function") v = v();
+                else v = document.querySelector("#"+v).value;
+                ids[k] = v;
+            }
+            if (props.activeElement !== null)
+                document.querySelector(props.activeElement||"#modalBackdrop").classList.remove("active");
+            hasModal=false
+            
+            
+            props.onSubmit(ids);
         }
-        
-        document.querySelector(props.activeElement||"#modalBackdrop").classList.remove("active");
-        hasModal=false
-        
-        
-        props.onSubmit(ids);
-    }
-
+    return ids;
 }
-
 document.querySelector("#modalBack").onclick = function(){
     hasModal=false;
     document.querySelector("#modalBackdrop").classList.remove("active")
@@ -211,9 +219,26 @@ document.querySelector("#settingsBtn").onclick = function(){
         }
     })
 };
-function clickSvg(event){
-    let box = document.querySelector("#board").getBoundingClientRect();
-    let real_x = (event.x-box.x)/box.width*zoomWidth+zoomX;
-    let real_y = (event.y-box.y)/box.height*zoomHeight+zoomY;
-    console.log([real_x, real_y]);
+
+
+function sideBar(props){
+    return modal({
+        activeElement: null,
+        savebtn: null,
+        isNotModal: true,
+        idPrepend: "_sidebar_input_",
+        titleElement: "#sideBarTitle",
+        inputElement: "#sidebarInfo",
+        title: props.title,
+        inputs: props.inputs,
+
+
+        doBrs: props.doBrs || 1
+    });
+}
+
+function toggleSidebar(){
+    let clist = document.querySelector("#sidebarCont").classList;
+    if (clist.contains("active")) clist.remove("active");
+    else clist.add("active");
 }
