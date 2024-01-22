@@ -23,8 +23,6 @@ function overideKeys (event){
 }
 
 
-
-
 function unitbox(props){
     let cont = document.createElement("div");
     let sel = document.createElement("select");
@@ -38,16 +36,26 @@ function unitbox(props){
     var inputs = {};
     function updateProp(){
         if (current == "ft/in"){
-            props.value = inputs.ft.value*1;
-            props.value += inputs.in.value*1/12;
+            if (inputs.ft.value === "" && inputs.in.value === "") props.value = null;
+            else{
+                props.value = inputs.ft.value*1;
+                props.value += inputs.in.value*1/12;
+            }
         }
         if (current == "meter"){
-            props.value = inputs.meter.value * 3.28084;
+            props.value = inputs.meter.value === "" ? null : inputs.meter.value * 3.28084;
         }
         if (current == "m/cm"){
-            props.value = inputs.meter.value * 3.28084;
-            props.value += inputs.cm.value * 3.28084/100;
+            if (inputs.meter.value === "" && inputs.cm.value === "") props.value = null;
+            else{
+                props.value = inputs.meter.value * 3.28084;
+                props.value += inputs.cm.value * 3.28084/100;
+            }
         }
+    }
+    function valueChangeHook(){
+        updateProp();
+        if (props.onchange) props.onchange(props.value);
     }
     sel.oninput = function(event){
         if (event != undefined){
@@ -62,7 +70,10 @@ function unitbox(props){
             inputs.ft.setAttribute("min", "0");
             inputs.ft.setAttribute("placeholder", "ft");
             inputs.ft.setAttribute("type", "number");
-            inputs.ft.value = Math.floor(props.value*1);
+
+            if (props.value !== null)
+                inputs.ft.value = Math.floor(props.value*1);
+            inputs.ft.onchange = valueChangeHook;
             unitArea.appendChild(inputs.ft)
 
             inputs.in = document.createElement("input")
@@ -70,7 +81,9 @@ function unitbox(props){
             inputs.in.setAttribute("max", "11");
             inputs.in.setAttribute("type", "number");
             inputs.in.setAttribute("placeholder", "in");
-            inputs.in.value = Math.round(props.value*12)%12;
+            inputs.in.onchange = valueChangeHook;
+            if (props.value !== null)
+                inputs.in.value = Math.round(props.value*12)%12;
             unitArea.appendChild(inputs.in)
         }
         if (current == "meter"){
@@ -78,7 +91,9 @@ function unitbox(props){
             inputs.meter.setAttribute("min", "0");
             inputs.meter.setAttribute("type", "number");
             inputs.meter.setAttribute("placeholder", "Meters");
-            inputs.meter.value = props.value*1/3.28084;
+            inputs.meter.onchange = valueChangeHook;
+            if (props.value !== null)
+                inputs.meter.value = props.value*1/3.28084;
             unitArea.appendChild(inputs.meter)
         }
         if (current == "m/cm"){
@@ -87,7 +102,9 @@ function unitbox(props){
             inputs.meter.setAttribute("min", "0");
             inputs.meter.setAttribute("type", "number");
             inputs.meter.setAttribute("placeholder", "Meters");
-            inputs.meter.value = Math.floor(meters);
+            inputs.meter.onchange = valueChangeHook;
+            if (props.value !== null)
+                inputs.meter.value = Math.floor(meters);
             unitArea.appendChild(inputs.meter)
             meters-=Math.floor(meters);
 
@@ -96,7 +113,9 @@ function unitbox(props){
             inputs.cm.setAttribute("max", "99");
             inputs.cm.setAttribute("type", "number");
             inputs.cm.setAttribute("placeholder", "Centimeters");
-            inputs.cm.value=Math.floor(meters*100)
+            inputs.cm.onchange = valueChangeHook;
+            if (props.value !== null)
+                inputs.cm.value=Math.floor(meters*100)
             unitArea.appendChild(inputs.cm)
         }
     };
@@ -108,9 +127,15 @@ function unitbox(props){
 
     props.addTo.appendChild(cont)
     sel.oninput();
-    return function(){
-        updateProp();
-        return props.value;
+    return function(forceValue){
+        if (forceValue === undefined){
+            updateProp();
+            return props.value;
+        }else{
+            props.value = forceValue;
+            sel.oninput();
+            
+        }
     };
 
 }
@@ -149,7 +174,7 @@ function modal(props){
             inputE.setAttribute("class", "modelInput");
             
             inputE.value = input.value || "";
-            inputE.onchange=props.onchange;
+            inputE.onchange=input.onchange;
 
             let th2 = document.createElement("th");
             th2.appendChild(inputE)
@@ -168,7 +193,8 @@ function modal(props){
         }else{
             ids[input.key] = unitbox({
                 addTo: tr,
-                value: 0
+                value: input.value,
+                onchange: input.onchange
             })
         }
         document.querySelector(props.inputElement || "#modalInputs").appendChild(tr)
