@@ -55,6 +55,26 @@ function unitbox(props){
     }
     function valueChangeHook(){
         updateProp();
+        if (current == "ft/in"){
+            if (inputs.in.value*1 == 12 && inputs.ft.value != ""){
+                inputs.ft.value = inputs.ft.value*1 + 1;
+                inputs.in.value = 0;
+            }
+            if (inputs.in.value*1 == -1 && inputs.ft.value != ""){
+                inputs.ft.value = inputs.ft.value*1 - 1;
+                inputs.in.value = 11;
+            }
+        }
+         if (current == "m/cm"){
+            if (inputs.cm.value*1 == 100 && inputs.meter.value != ""){
+                inputs.meter.value = inputs.meter.value*1 + 1;
+                inputs.cm.value = 0;
+            }
+            if (inputs.cm.value*1 == -1 && inputs.meter.value != ""){
+                inputs.meter.value = inputs.meter.value*1 - 1;
+                inputs.cm.value = 99;
+            }
+        }
         if (props.onchange) props.onchange(props.value);
     }
     sel.oninput = function(event){
@@ -67,7 +87,6 @@ function unitbox(props){
 
         if (current == "ft/in"){
             inputs.ft = document.createElement("input")
-            inputs.ft.setAttribute("min", "0");
             inputs.ft.setAttribute("placeholder", "ft");
             inputs.ft.setAttribute("type", "number");
 
@@ -77,8 +96,8 @@ function unitbox(props){
             unitArea.appendChild(inputs.ft)
 
             inputs.in = document.createElement("input")
-            inputs.in.setAttribute("min", "0");
-            inputs.in.setAttribute("max", "11");
+            inputs.in.setAttribute("min", "-1");
+            inputs.in.setAttribute("max", "12");
             inputs.in.setAttribute("type", "number");
             inputs.in.setAttribute("placeholder", "in");
             inputs.in.onchange = valueChangeHook;
@@ -88,7 +107,6 @@ function unitbox(props){
         }
         if (current == "meter"){
             inputs.meter = document.createElement("input")
-            inputs.meter.setAttribute("min", "0");
             inputs.meter.setAttribute("type", "number");
             inputs.meter.setAttribute("placeholder", "Meters");
             inputs.meter.onchange = valueChangeHook;
@@ -99,7 +117,6 @@ function unitbox(props){
         if (current == "m/cm"){
             let meters = props.value*1/3.28084;
             inputs.meter = document.createElement("input")
-            inputs.meter.setAttribute("min", "0");
             inputs.meter.setAttribute("type", "number");
             inputs.meter.setAttribute("placeholder", "Meters");
             inputs.meter.onchange = valueChangeHook;
@@ -109,8 +126,8 @@ function unitbox(props){
             meters-=Math.floor(meters);
 
             inputs.cm = document.createElement("input")
-            inputs.cm.setAttribute("min", "0");
-            inputs.cm.setAttribute("max", "99");
+            inputs.cm.setAttribute("min", "-1");
+            inputs.cm.setAttribute("max", "100");
             inputs.cm.setAttribute("type", "number");
             inputs.cm.setAttribute("placeholder", "Centimeters");
             inputs.cm.onchange = valueChangeHook;
@@ -167,14 +184,20 @@ function modal(props){
         th1.appendChild(label)
         tr.appendChild(th1);
 
-        if (input.type != "unitbox"){
+        if (input.type == "button"){
+            // let btn = document.createElement("button");
+            // inputE.id = id;
+            // inputE.setAttribute("class", input.class);
+            // inputE.onclick = input.onclick;
+        }
+        else if (input.type != "unitbox"){
             let inputE = document.createElement("input");
             inputE.id = id;
             inputE.setAttribute("type", input.type);
             inputE.setAttribute("class", "modelInput");
             
             inputE.value = input.value || "";
-            inputE.onchange=input.onchange;
+            inputE.oninput=input.onchange;
 
             let th2 = document.createElement("th");
             th2.appendChild(inputE)
