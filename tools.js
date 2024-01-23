@@ -113,7 +113,7 @@ let toolClickMng = [
 	function(){}
 ]
 let toolInits = [
-	function(){},
+	function(){console.log("tool init")},
 	lineInit,
 	function(){}
 ]

@@ -133,12 +133,14 @@
 
 		var activeToolbarItem = 0;
 
+		var initialBoardHtml = document.querySelector("#board").innerHTML;
+
 		var svgRatio = 10; // Pixels per 'foot''
 		function do404(){
 			document.body.innerHTML = "<center><h1>404 map not found</h1></center>";
 		}
 		// Don't do anything if 404
-		(function(){
+		var initHtml = function(){
 			if (!location.search.includes("?")) return do404();
 			let nameGet = decodeURIComponent(location.search).split("name=");
 			if (nameGet.length != 2) return do404();
@@ -146,6 +148,7 @@
 			if (!map || !mapName) return do404();
 			document.querySelector("#navname").textContent = capitalizeFirstLetter(mapName);
 			document.querySelector("#navtime").textContent = "";
+			document.querySelector("#board").innerHTML = initialBoardHtml;
 
 			if (map.length == 0){
 				map.push({
@@ -170,11 +173,25 @@
 					zoomY=zoomX
 					updateSvgSize();
 				}
+				else if (obj.type == "line"){
+					let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+					line.style.stroke=obj.color;
+					[x1, y1] = ftToSvg(obj.points[0], obj.points[1]);
+					[x2, y2] = ftToSvg(obj.points[2], obj.points[3]);
+					line.setAttribute("x1", x1);
+					line.setAttribute("y1", y1);
+					line.setAttribute("x2", x2);
+					line.setAttribute("y2", y2);
+
+					document.querySelector("#board").appendChild(line);
+				}
 			}
+			toolInits[0]();
 			updateActiveTool();
 
 
-		})();	
+		}
+		initHtml();
 		function updateSvgSize(){
 			let sb = document.querySelector("#screenBox");
 			sb.setAttribute("width", svgWidth);

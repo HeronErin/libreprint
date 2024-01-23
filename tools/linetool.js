@@ -1,3 +1,4 @@
+var sideBar;
 var line_p1_e;
 var line_p2_e;
 var line_sel_p;
@@ -26,7 +27,28 @@ function lineInit(){
 			{key: "angle", type: "number", label: "Angle: ", value: null, onchange:smartAngle},
 			{key: "length", type: "unitbox", label: "Length: ", value: null, onchange:smartAngle},
 			{key: "width", type: "unitbox", label: "Width: ", value:1/12, onchange: lineUpdateWidth},
-			{type: "button", label:"Add to screen", class: "savebtn", newline: false, onclick: function(){console.log("WeeeWooo")}}
+			{key: "color", type:"text", label: "Color:", value: "black", onchange: function(){
+				if (line_preview) line_preview.style.stroke = document.getElementById(lineSettings.color).value;
+			}},
+			{type: "buttongroup", buttons: [
+				{label:"Reset", class: "backbtn", onclick: function(){
+					lineToolDestroy();
+					lineInit();
+				}},
+				{label:"Add to screen", class: "savebtn", onclick: function(){
+					if (lineSettings.x1() == null || lineSettings.y1() == null || lineSettings.x2() == null || lineSettings.y2() == null)
+						return;
+					map.push({
+						"type": "line",
+						"points": [lineSettings.x1(), lineSettings.y1(), lineSettings.x2(), lineSettings.y2()],
+						"color": document.getElementById(lineSettings.color).value
+					});
+					savebtn();
+					lineToolDestroy();
+					lineInit();
+					initHtml();
+				}},
+			]}
 		]
 	});
 
@@ -98,7 +120,7 @@ function pointOneChange(xOrEvent, y, noZoomFunc){
 		document.querySelector("#board").appendChild(line_p1_e);
 
 		line_preview = document.createElementNS("http://www.w3.org/2000/svg", "line");
-		line_preview.setAttribute("style", "stroke:rgb(255,0,0);")
+		line_preview.style.stroke = document.getElementById(lineSettings.color).value;
 		lineUpdateWidth();
 		document.querySelector("#board").appendChild(line_preview);
 	}

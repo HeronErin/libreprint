@@ -184,11 +184,19 @@ function modal(props){
         th1.appendChild(label)
         tr.appendChild(th1);
 
-        if (input.type == "button"){
-            // let btn = document.createElement("button");
-            // inputE.id = id;
-            // inputE.setAttribute("class", input.class);
-            // inputE.onclick = input.onclick;
+        if (input.type == "buttongroup"){
+            th1.remove();
+            for (let button of input.buttons){
+                let btn = document.createElement("button");
+                btn.id = id;
+                btn.setAttribute("class", button.class);
+                btn.onclick = button.onclick;
+                btn.textContent=button.label
+
+                th1 = document.createElement("th");
+                th1.appendChild(btn);
+                tr.appendChild(th1);
+            }
         }
         else if (input.type != "unitbox"){
             let inputE = document.createElement("input");
