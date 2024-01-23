@@ -41,7 +41,8 @@ function lineInit(){
 					map.push({
 						"type": "line",
 						"points": [lineSettings.x1(), lineSettings.y1(), lineSettings.x2(), lineSettings.y2()],
-						"color": document.getElementById(lineSettings.color).value
+						"color": document.getElementById(lineSettings.color).value,
+						"stroke": lineSettings.width()
 					});
 					savebtn();
 					lineToolDestroy();
@@ -61,7 +62,7 @@ function smartAngle(){
 	let len = lineSettings.length();
 	if (angle != "" && len != null){
 		let [px, py] = rotate2d(len * svgRatio, 0, degToRad(angle*1));
-		console.log([px, py])
+		
 		pointTwoChange(px+editLine[0], py+editLine[1]);
 	}
 }

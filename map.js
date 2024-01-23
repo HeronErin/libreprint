@@ -234,7 +234,7 @@ function modal(props){
                 document.querySelector(props.inputElement || "#modalInputs").appendChild(document.createElement("br"));
         i++;
     }
-    if (props.savebtn != null)
+    if (props.savebtn !== null)
         document.querySelector(props.savebtn || "#modalSave").onclick = function(){
             if (!open) return;
             open=false;
@@ -257,22 +257,29 @@ document.querySelector("#modalBack").onclick = function(){
     hasModal=false;
     document.querySelector("#modalBackdrop").classList.remove("active")
 };
+
+
 document.querySelector("#settingsBtn").onclick = function(){
     modal({
         title: "Settings",
         inputs: [
             {key: "width", type: "number", min: 10, label: "Svg width", value: svgWidth},
             {key: "height", type: "number", min: 10, label: "Svg height", value: svgHeight},
+            {key: "offx", type: "unitbox", label: "Svg offset x", value: svgOffsetX*svgRatio},
+            {key: "offy", type: "unitbox", label: "Svg offset y", value: svgOffsetY*svgRatio},
             {key: "svgRatio", type: "number", min: 0, label: "Pixels per foot", value: svgRatio},
             {key: "showScreenBox", type:"checkbox", value: showScreenBox, label: "Show image box"}
         ],
         onSubmit: function(ret){
-            console.log(ret)
-            map[0].width=svgWidth=ret.width;
-            map[0].height=svgHeight=ret.height;
-            map[0].svgRatio=svgRatio=ret.svgRatio
+            map[0].width=svgWidth=ret.width*1 || 0;
+            map[0].height=svgHeight=ret.height*1 || 0;
+            map[0].svgRatio=svgRatio=ret.svgRatio*1 || 0;
+
+            map[0].svgOffsetX=svgOffsetX = ret.offx*1/svgRatio || 0;
+            map[0].svgOffsetY=svgOffsetY = ret.offy*1/svgRatio || 0;
             map[0].showScreenBox=showScreenBox=ret.showScreenBox
             savebtn();
+            initHtml();
         }
     })
 };

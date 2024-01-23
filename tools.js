@@ -108,12 +108,12 @@ let toolMouseMng = [
 	function(){}
 ]
 let toolClickMng = [
-	function(){},
+	selectToolClick,
 	lineClick,
 	function(){}
 ]
 let toolInits = [
-	function(){console.log("tool init")},
+	selectToolInit,
 	lineInit,
 	function(){}
 ]

@@ -116,6 +116,7 @@
 	</script>
 	<script type="text/javascript" src="map.js"></script>
 	<script type="text/javascript" src="tools/linetool.js"></script>
+	<script type="text/javascript" src="tools/select_tool.js"></script>
 	<script type="text/javascript" src="tools.js"></script>
 	<script type="text/javascript">
 		var map, mapName;
@@ -126,6 +127,10 @@
 		var zoomX = 0
 		var zoomY = 0
 
+
+
+		var svgOffsetX = 0;
+		var svgOffsetY = 0;
 		var svgWidth = 300;
 		var svgHeight = 300;
 
@@ -139,8 +144,8 @@
 		function do404(){
 			document.body.innerHTML = "<center><h1>404 map not found</h1></center>";
 		}
-		// Don't do anything if 404
-		var initHtml = function(){
+		
+		var initHtml = function(noInitTool){
 			if (!location.search.includes("?")) return do404();
 			let nameGet = decodeURIComponent(location.search).split("name=");
 			if (nameGet.length != 2) return do404();
@@ -154,6 +159,8 @@
 				map.push({
 					type: "setsize",
 					width: 100,
+					svgOffsetX: 0,
+					svgOffsetY: 0,
 					height: 100,
 					svgRatio: 10,
 					showScreenBox: true
@@ -166,6 +173,9 @@
 					svgWidth = obj.width;
 					svgRatio = obj.svgRatio;
 					svgHeight = obj.height;
+					svgOffsetX = obj.svgOffsetX;
+					svgOffsetY = obj.svgOffsetY;
+
 					showScreenBox = obj.showScreenBox;
 					zoomWidth=svgWidth*1.1;
 					zoomHeight=zoomWidth;
@@ -176,6 +186,7 @@
 				else if (obj.type == "line"){
 					let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 					line.style.stroke=obj.color;
+					line.style.strokeWidth=(obj.stroke || 1)*svgRatio;
 					[x1, y1] = ftToSvg(obj.points[0], obj.points[1]);
 					[x2, y2] = ftToSvg(obj.points[2], obj.points[3]);
 					line.setAttribute("x1", x1);
@@ -186,14 +197,18 @@
 					document.querySelector("#board").appendChild(line);
 				}
 			}
-			toolInits[0]();
-			updateActiveTool();
+			if (!noInitTool){
+				toolInits[0]();
+				updateActiveTool();
+			}
 
 
 		}
 		initHtml();
 		function updateSvgSize(){
 			let sb = document.querySelector("#screenBox");
+			sb.setAttribute("x", svgOffsetX);
+			sb.setAttribute("y", svgOffsetY);
 			sb.setAttribute("width", svgWidth);
 			sb.setAttribute("height", svgHeight);
 			sb.style.display=showScreenBox ? "" : "none";
@@ -225,7 +240,7 @@
 			document.querySelector("#screenBox").remove();
 
 			let oldBox = document.querySelector("#board").getAttribute("viewBox");
-			document.querySelector("#board").setAttribute("viewBox", "0 0 "+svgWidth+" "+svgHeight)
+			document.querySelector("#board").setAttribute("viewBox", svgOffsetX+" "+svgOffsetY+" "+svgWidth+" "+svgHeight)
 			let data = document.querySelector("#board").outerHTML;
 			document.querySelector("#board").appendChild(screenBoxCpy);
 			document.querySelector("#board").setAttribute("viewBox", oldBox);
