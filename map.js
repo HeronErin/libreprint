@@ -149,7 +149,7 @@ function unitbox(props){
             inputs.cm.setAttribute("placeholder", "Centimeters");
             inputs.cm.onchange = valueChangeHook;
             if (props.value !== null)
-                inputs.cm.value=Math.floor(meters*100)
+                inputs.cm.value=Math.round(meters*100)
             unitArea.appendChild(inputs.cm)
         }
     };

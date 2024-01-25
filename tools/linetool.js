@@ -50,6 +50,10 @@ function lineInit(isEditOrUndefined){
 			}},
 			{type: "buttongroup", buttons: [
 				{label:isEditOrUndefined ? "Delete" : "Reset", class: "backbtn", onclick: function(){
+					if (isEditOrUndefined){
+						map.splice(isEditOrUndefined, 1);
+						savebtn();
+					}
 					lineToolDestroy();
 					lineInit();
 				}},
@@ -245,7 +249,7 @@ function lineClick(xy){
 
 		(linestate.moving=="p1" ? lineSettings.x1 : lineSettings.x2)(ftx);
 		(linestate.moving=="p1" ? lineSettings.y1 : lineSettings.y2)(fty);
-		[editLine[offset], editLine[offset+1]] = xy;
+		// [editLine[offset], editLine[offset+1]] = xy;
 		linestate.moving = undefined;
 	}
 }
@@ -275,7 +279,7 @@ function lineToolMouseMove(xy){
 
 		(linestate.moving=="p1" ? pointOneChange : pointTwoChange)(xy[0], xy[1], true);
 
-		[editLine[offset], editLine[offset+1]] = xy;
+		// [editLine[offset], editLine[offset+1]] = xy;
 	}
 }
 function _magic_point(obj, x, y){
