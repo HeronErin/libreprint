@@ -138,6 +138,8 @@
 
 		var activeToolbarItem = 0;
 
+		var svgElements = {};
+
 		var initialBoardHtml = document.querySelector("#board").innerHTML;
 
 		var svgRatio = 10; // Pixels per 'foot''
@@ -168,7 +170,7 @@
 				savebtn();
 			}
 
-			for (let obj of map){
+			for (let [index, obj] of map.entries()){
 				if (obj.type == "setsize"){
 					svgWidth = obj.width;
 					svgRatio = obj.svgRatio;
@@ -185,6 +187,7 @@
 				}
 				else if (obj.type == "line"){
 					let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+					svgElements[index] = line;
 					line.style.stroke=obj.color;
 					line.style.strokeWidth=(obj.stroke || 1)*svgRatio;
 					[x1, y1] = ftToSvg(obj.points[0], obj.points[1]);
@@ -198,7 +201,7 @@
 				}
 			}
 			if (!noInitTool){
-				toolInits[0]();
+				toolInits[activeToolbarItem]();
 				updateActiveTool();
 			}
 

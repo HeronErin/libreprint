@@ -11,6 +11,29 @@ function handleSelectionToolSelection(){
 	if (currentlySelectedElement == null){
 		return selectToolWindowSel();
 	}
+	var sel = map[currentlySelectedElement];
+	if (sel.type == "line"){
+		activeToolbarItem=1;
+		lineInit(currentlySelectedElement);
+		updateActiveTool();
+
+		linestate.isedit = currentlySelectedElement;
+		editLine = sel.points;
+		pointOneChange(sel.points[0]*svgRatio, sel.points[1]*svgRatio);
+		pointTwoChange(sel.points[2]*svgRatio, sel.points[3]*svgRatio);
+		lineSettings.width(sel.stroke);
+
+		line_preview.remove();
+		line_preview = svgElements[currentlySelectedElement];
+
+		lineUpdateWidth();
+		
+		document.getElementById(lineSettings.color).value = sel.color;
+		document.getElementById(lineSettings.color).oninput();
+
+
+
+	}
 }
 
 function selectToolWindowSel(){
@@ -42,9 +65,20 @@ function selectToolWindowSel(){
 }
 
 function selectToolClick(xy){
-	for (let obj of map){
+	var closestDistance;
+	var closestIndex;
+	for (let [index, obj] of map.entries()){
 		if (obj.type == "line"){
-			console.log("line")
+			var distance = distanceToLine(xy[0]/svgRatio, xy[1]/svgRatio, obj.points[0], obj.points[1], obj.points[2], obj.points[3]);
+			
+			if (closestDistance != undefined && closestDistance < distance) continue;
+			
+			closestIndex = index;
+			closestDistance = distance;
 		}
+	}
+	if (closestDistance !== undefined){
+		currentlySelectedElement = closestIndex;
+		handleSelectionToolSelection();
 	}
 }

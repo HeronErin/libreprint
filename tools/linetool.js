@@ -8,7 +8,7 @@ var line_preview;
 var editLine;
 var lineSettings;
 var linestate;
-function lineInit(){
+function lineInit(isEditOrUndefined){
     document.querySelector("#sidebarCont").classList.remove("active");
     
 	editLine = [undefined, undefined, undefined, undefined];
@@ -31,23 +31,31 @@ function lineInit(){
 				if (line_preview) line_preview.style.stroke = document.getElementById(lineSettings.color).value;
 			}},
 			{type: "buttongroup", buttons: [
-				{label:"Reset", class: "backbtn", onclick: function(){
+				{label:isEditOrUndefined ? "Delete" : "Reset", class: "backbtn", onclick: function(){
 					lineToolDestroy();
 					lineInit();
 				}},
-				{label:"Add to screen", class: "savebtn", onclick: function(){
+				{label:isEditOrUndefined ? "Save" : "Add to screen", class: "savebtn", onclick: function(){
 					if (lineSettings.x1() == null || lineSettings.y1() == null || lineSettings.x2() == null || lineSettings.y2() == null)
 						return;
-					map.push({
+
+					var mapEntry = ({
 						"type": "line",
 						"points": [lineSettings.x1(), lineSettings.y1(), lineSettings.x2(), lineSettings.y2()],
 						"color": document.getElementById(lineSettings.color).value,
 						"stroke": lineSettings.width()
 					});
+					if (isEditOrUndefined){
+						map[isEditOrUndefined] = mapEntry;
+					}else{
+						map.push(mapEntry);
+					}
 					savebtn();
+
 					lineToolDestroy();
 					lineInit();
 					initHtml();
+
 				}},
 			]}
 		]
@@ -72,7 +80,8 @@ function lineToolDestroy(){
 	if (line_p1_e) line_p1_e.remove();
 	if (line_p2_e) line_p2_e.remove();
 	if (line_sel_p) line_sel_p.remove();
-	if (line_preview) line_preview.remove();
+	if (line_preview && !linestate.isedit) line_preview.remove();
+	if (line_preview && linestate.isedit) initHtml();
 	line_p1_e=line_p2_e=line_sel_p=line_preview=undefined;
 
 }
@@ -211,6 +220,14 @@ function lineClick(xy){
 		
 		lineToolMouseMove(xy);
 	}else if (linestate.state == "points found" && linestate.moving){
+		let offset = linestate.moving=="p1" ? 0 : 2;
+		
+
+		let [ftx, fty] = svgToFt(xy[0], xy[1]);
+
+		(linestate.moving=="p1" ? lineSettings.x1 : lineSettings.x2)(ftx);
+		(linestate.moving=="p1" ? lineSettings.y1 : lineSettings.y2)(fty);
+		[editLine[offset], editLine[offset+1]] = xy;
 		linestate.moving = undefined;
 	}
 }
@@ -229,7 +246,7 @@ function lineToolMouseMove(xy){
 	if (linestate.state == "points found" && linestate.moving){
 		let offset = linestate.moving=="p1" ? 0 : 2;
 		let obj = linestate.moving=="p1" ? line_p1_e : line_p2_e;
-		[editLine[offset], editLine[offset+1]] = xy;
+		
 
 		let [ftx, fty] = svgToFt(xy[0], xy[1]);
 
@@ -239,6 +256,8 @@ function lineToolMouseMove(xy){
 		(linestate.moving=="p1" ? lineSettings.y1 : lineSettings.y2)(fty);
 
 		(linestate.moving=="p1" ? pointOneChange : pointTwoChange)(xy[0], xy[1], true);
+
+		[editLine[offset], editLine[offset+1]] = xy;
 	}
 }
 function _magic_point(obj, x, y){
